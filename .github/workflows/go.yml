@@ -1,63 +1,25 @@
-name: Go CI
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 123
-          POSTGRES_DB: test_db
-        ports:
-          - 5433:5432
-        # healthcheck в GitHub Actions через services — не поддерживается напрямую
-
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.22
 
-      - name: Установка golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: v1.64.8
+      - name: Install dependencies
+        run: go mod tidy
 
-      - name: Установка зависимостей
-        run: go mod download
+      - name: Run linters
+        run: golangci-lint run
 
-      - name: Установка migrate
-        run: |
-          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
-          sudo mv migrate /usr/local/bin/migrate
-
-      - name: Ожидание запуска PostgreSQL
-        run: |
-          until pg_isready --host=localhost --port=5433 --username=postgres; do
-            echo "Ожидание запуска PostgreSQL..."
-            sleep 2
-          done
-
-      - name: Применение миграций
-        run: |
-          migrate -path ./migrations -database "postgres://postgres:123@localhost:5433/test_db?sslmode=disable" up
-
-      - name: Линт
-        run: make lint
-
-      - name: Тесты
-        run: make test
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5433
-
+      - name: Run tests
+        run: go test ./...

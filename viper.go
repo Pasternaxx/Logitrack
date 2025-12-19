@@ -1,9 +1,10 @@
 package awesomeProject
 
 import (
+	"log"
+
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func InitConfig() {

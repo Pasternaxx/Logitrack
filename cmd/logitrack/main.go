@@ -35,12 +35,7 @@ func main() {
 		log.Fatalln("Не удалось подключиться к БД:", err)
 	}
 	log.Println("Успешное подключение к БД mydb")
-	defer func(db *sqlx.DB) {
-		err := db.Close()
-		if err != nil {
-
-		}
-	}(db)
+	defer db.Close()
 
 	port := viper.GetString("APP_PORT")
 	if port == "" {

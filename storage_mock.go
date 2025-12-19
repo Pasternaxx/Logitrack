@@ -6,10 +6,6 @@ import (
 	"fmt"
 )
 
-var orderStatuses = []string{"created", "shipped", "delivered", "cancelled"}
-
-var ErrOrderNotFound = errors.New("id не может быть 0")
-
 type OrderStoragexc interface {
 	GetAll() []order.Order
 	Save(ord order.Order) (order.Order, error)
@@ -19,12 +15,6 @@ type OrderStoragexc interface {
 
 type OrderStorageMock struct {
 	Orders []order.Order
-}
-
-func NewOrderStorage() *OrderStorageMock {
-	return &OrderStorageMock{
-		Orders: []order.Order{},
-	}
 }
 
 func (o *OrderStorageMock) Save(ord order.Order) (order.Order, error) {

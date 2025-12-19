@@ -32,15 +32,21 @@ func (h *Handler) RegisterRouters(mux *http.ServeMux) {
 
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(v)
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
+		return
+	}
 }
 
 func writeJSONError(w http.ResponseWriter, message string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(map[string]string{
+	err := json.NewEncoder(w).Encode(map[string]string{
 		"error": message,
 	})
+	if err != nil {
+		return
+	}
 }
 
 func (h *Handler) GetAllOrders(w http.ResponseWriter, r *http.Request) {

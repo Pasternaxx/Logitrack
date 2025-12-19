@@ -1,15 +1,17 @@
 package handler
 
 import (
-	"awesomeProject/internal/order"
 	"bytes"
 	"encoding/json"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+
+	"awesomeProject/internal/order"
 )
 
 var h = NHandler()

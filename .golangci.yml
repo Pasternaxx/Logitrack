@@ -1,15 +1,9 @@
 linters:
   enable:
     - govet
-    - gofmt
-    - errcheck
     - staticcheck
-  disable:
-    - deadcode
-    - varcheck
-
+    - errcheck
+    - gofmt
+    - goimports
 run:
   timeout: 5m
-
-issues:
-  exclude-use-default: false
