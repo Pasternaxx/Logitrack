@@ -1,0 +1,7 @@
+app:
+  host: "localhost"
+  port: "8080"
+
+db:
+  DB_HOST: "db"
+  DB_PORT: "5432"

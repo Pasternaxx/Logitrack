@@ -1,0 +1,12 @@
+version: "2"
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck      # ← включает gosimple + stylecheck
+    - unused
+    - misspell
+
+run:
+  timeout: 5m
