@@ -9,6 +9,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123
+          POSTGRES_DB: test_db
+        ports:
+          - 5433:5432
+        # GitHub не поддерживает healthcheck напрямую, поэтому ждём вручную
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
@@ -18,10 +29,36 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
+      # --- Линтер (всё ещё работает) ---
       - name: Линт
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.64.8
           ./bin/golangci-lint run ./...
 
+      # --- Ожидание запуска PostgreSQL ---
+      - name: Wait for PostgreSQL to start
+        run: |
+          until pg_isready --host=localhost --port=5433 --username=postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      # --- Применение миграций (если есть) ---
+      - name: Install migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/local/bin/migrate
+
+      - name: Run migrations
+        run: |
+          migrate -path ./migrations -database "postgres://postgres:123@localhost:5433/test_db?sslmode=disable" up
+
+      # --- Запуск тестов ---
       - name: Run tests
         run: go test ./...
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5433
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123
+          POSTGRES_DB: test_db
