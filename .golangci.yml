@@ -1,12 +1,15 @@
-version: "2"
-
 linters:
   enable:
     - govet
+    - gofmt
     - errcheck
-    - staticcheck      # ← включает gosimple + stylecheck
-    - unused
-    - misspell
+    - staticcheck
+  disable:
+    - deadcode
+    - varcheck
 
 run:
   timeout: 5m
+
+issues:
+  exclude-use-default: false
