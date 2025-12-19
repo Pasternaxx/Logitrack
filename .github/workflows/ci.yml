@@ -35,6 +35,10 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.64.8
           ./bin/golangci-lint run ./...
 
+  # --- Установка pg_isready ---
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       # --- Ожидание запуска PostgreSQL ---
       - name: Wait for PostgreSQL to start
         run: |
